@@ -30,10 +30,11 @@ const Header = () => {
         @media (min-width: 769px) {
           .mobile-menu-btn { display: none !important; }
           .mobile-nav { display: none !important; }
+          .desktop-nav { margin-left: auto !important; }
         }
       `}</style>
       <header style={{ backgroundColor: '#1e3a8a', color: 'white', padding: '15px 0', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000 }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', position: 'relative', gap: '40px' }}>
           <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>
             <h1 style={{ fontSize: '1.8rem', margin: 0 }}>TrustFund Capital</h1>
           </Link>

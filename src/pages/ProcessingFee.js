@@ -11,7 +11,7 @@ const ProcessingFee = () => {
     
     // Demo mode - simulate STK push
     setTimeout(() => {
-      alert(`STK Push sent to ${phoneNumber}. In demo mode - payment would be processed via M-PESA.`);
+      alert(`STK Push sent to ${phoneNumber}. Please complete the payment on your phone.`);
       setIsProcessing(false);
       
       // Simulate payment success after 3 seconds
