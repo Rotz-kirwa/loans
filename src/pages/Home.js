@@ -6,10 +6,75 @@ const Home = () => {
   return (
     <div style={{ fontFamily: 'Arial, sans-serif', margin: 0, padding: 0, paddingTop: '70px' }}>
       <style>{`
+        .hero-section {
+          background-image: url('https://i.pinimg.com/736x/85/24/93/852493ad820113f7e38b1bd4a45d5676.jpg');
+        }
+        @media (max-width: 1200px) {
+          .hero-section {
+            background-image: url('https://i.pinimg.com/736x/85/24/93/852493ad820113f7e38b1bd4a45d5676.jpg') !important;
+          }
+        }
         @media (max-width: 768px) {
           .hero-section {
-            height: 40vh !important;
-            background-position: center top !important;
+            background-image: url('https://i.pinimg.com/736x/85/24/93/852493ad820113f7e38b1bd4a45d5676.jpg') !important;
+            height: 60vh !important;
+            background-size: cover !important;
+            background-position: center center !important;
+            padding: 20px 15px !important;
+          }
+          .hero-content button {
+            padding: 15px 25px !important;
+            font-size: 1.1rem !important;
+          }
+          .features-section {
+            padding: 50px 15px !important;
+          }
+          .features-section h3 {
+            font-size: 1.8rem !important;
+            margin-bottom: 40px !important;
+          }
+          .feature-card {
+            margin: 15px 0 !important;
+            padding: 25px 20px !important;
+          }
+          .feature-icon {
+            width: 60px !important;
+            height: 60px !important;
+            font-size: 2.5rem !important;
+          }
+          .feature-title {
+            font-size: 1.2rem !important;
+          }
+          .cta-section {
+            padding: 40px 15px !important;
+          }
+          .cta-section h3 {
+            font-size: 1.5rem !important;
+          }
+          .cta-section p {
+            font-size: 1rem !important;
+          }
+          .footer {
+            padding: 30px 15px 15px !important;
+          }
+          .footer-grid {
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+            text-align: center !important;
+          }
+          .footer h3, .footer h4 {
+            font-size: 1.1rem !important;
+          }
+          .social-icons {
+            justify-content: center !important;
+          }
+          .bottom-bar {
+            flex-direction: column !important;
+            text-align: center !important;
+            gap: 10px !important;
+          }
+          .bottom-bar p {
+            font-size: 0.8rem !important;
           }
         }
       `}</style>
@@ -17,17 +82,17 @@ const Home = () => {
       
       {/* Hero Section */}
       <section className="hero-section" style={{ 
-        backgroundImage: 'url(https://i.pinimg.com/1200x/b0/8a/d3/b08ad3a94a05abad4c9243919a3004bd.jpg)', 
         backgroundSize: 'cover', 
-        backgroundPosition: window.innerWidth <= 768 ? 'center -100px' : 'center', 
+        backgroundPosition: 'center', 
         backgroundRepeat: 'no-repeat',
-        height: window.innerWidth <= 768 ? '35vh' : '60vh',
-        padding: '80px 20px', 
+        height: '80vh',
+        padding: '40px 20px', 
         textAlign: 'center',
         position: 'relative',
         display: 'flex',
         alignItems: 'flex-end',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        backgroundColor: '#f8fafc'
       }}>
         <div className="hero-content" style={{ maxWidth: '800px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <Link to="/apply">
@@ -49,13 +114,13 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section style={{ padding: '80px 20px', backgroundColor: '#f8fafc' }}>
+      <section className="features-section" style={{ padding: '80px 20px', backgroundColor: '#f8fafc' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <h3 style={{ textAlign: 'center', fontSize: '2.5rem', color: '#1e3a8a', marginBottom: '60px', fontWeight: 'bold' }}>
             Why Choose TrustFund Capital?
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px' }}>
-            <div style={{ 
+            <div className="feature-card" style={{ 
               textAlign: 'center', 
               padding: '40px 30px', 
               backgroundColor: 'white', 
@@ -64,7 +129,7 @@ const Home = () => {
               transition: 'transform 0.3s ease',
               border: '1px solid #e2e8f0'
             }}>
-              <div style={{ 
+              <div className="feature-icon" style={{ 
                 fontSize: '4rem', 
                 marginBottom: '20px',
                 background: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
@@ -76,10 +141,10 @@ const Home = () => {
                 justifyContent: 'center',
                 margin: '0 auto 20px'
               }}>⚡</div>
-              <h4 style={{ color: '#1e3a8a', marginBottom: '15px', fontSize: '1.4rem', fontWeight: 'bold' }}>Fast Approval</h4>
+              <h4 className="feature-title" style={{ color: '#1e3a8a', marginBottom: '15px', fontSize: '1.4rem', fontWeight: 'bold' }}>Fast Approval</h4>
               <p style={{ color: '#64748b', lineHeight: '1.6', fontSize: '1rem' }}>Get approved within minutes with our streamlined process and instant decision technology</p>
             </div>
-            <div style={{ 
+            <div className="feature-card" style={{ 
               textAlign: 'center', 
               padding: '40px 30px', 
               backgroundColor: 'white', 
@@ -88,7 +153,7 @@ const Home = () => {
               transition: 'transform 0.3s ease',
               border: '1px solid #e2e8f0'
             }}>
-              <div style={{ 
+              <div className="feature-icon" style={{ 
                 fontSize: '4rem', 
                 marginBottom: '20px',
                 background: 'linear-gradient(135deg, #10b981, #059669)',
@@ -100,10 +165,10 @@ const Home = () => {
                 justifyContent: 'center',
                 margin: '0 auto 20px'
               }}>🔒</div>
-              <h4 style={{ color: '#1e3a8a', marginBottom: '15px', fontSize: '1.4rem', fontWeight: 'bold' }}>Secure Process</h4>
+              <h4 className="feature-title" style={{ color: '#1e3a8a', marginBottom: '15px', fontSize: '1.4rem', fontWeight: 'bold' }}>Secure Process</h4>
               <p style={{ color: '#64748b', lineHeight: '1.6', fontSize: '1rem' }}>Your information is protected with bank-level security and advanced encryption technology</p>
             </div>
-            <div style={{ 
+            <div className="feature-card" style={{ 
               textAlign: 'center', 
               padding: '40px 30px', 
               backgroundColor: 'white', 
@@ -112,7 +177,7 @@ const Home = () => {
               transition: 'transform 0.3s ease',
               border: '1px solid #e2e8f0'
             }}>
-              <div style={{ 
+              <div className="feature-icon" style={{ 
                 fontSize: '4rem', 
                 marginBottom: '20px',
                 background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
@@ -124,7 +189,7 @@ const Home = () => {
                 justifyContent: 'center',
                 margin: '0 auto 20px'
               }}>💰</div>
-              <h4 style={{ color: '#1e3a8a', marginBottom: '15px', fontSize: '1.4rem', fontWeight: 'bold' }}>Best Rates</h4>
+              <h4 className="feature-title" style={{ color: '#1e3a8a', marginBottom: '15px', fontSize: '1.4rem', fontWeight: 'bold' }}>Best Rates</h4>
               <p style={{ color: '#64748b', lineHeight: '1.6', fontSize: '1rem' }}>Competitive interest rates and flexible repayment terms tailored to your financial needs</p>
             </div>
           </div>
@@ -132,7 +197,7 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section style={{ backgroundColor: '#1e3a8a', color: 'white', padding: '50px 20px', textAlign: 'center' }}>
+      <section className="cta-section" style={{ backgroundColor: '#1e3a8a', color: 'white', padding: '50px 20px', textAlign: 'center' }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           <h3 style={{ fontSize: '2rem', marginBottom: '20px' }}>Ready to Apply?</h3>
           <p style={{ fontSize: '1.1rem', marginBottom: '30px' }}>
@@ -156,9 +221,9 @@ const Home = () => {
       </section>
 
       {/* Footer */}
-      <footer style={{ backgroundColor: '#1e3a8a', color: 'white', padding: '40px 20px 20px' }}>
+      <footer className="footer" style={{ backgroundColor: '#1e3a8a', color: 'white', padding: '40px 20px 20px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '30px', marginBottom: '25px' }}>
+          <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '30px', marginBottom: '25px' }}>
             
             {/* Company Info */}
             <div>
@@ -166,7 +231,7 @@ const Home = () => {
               <p style={{ lineHeight: '1.5', marginBottom: '15px', color: '#cbd5e1', fontSize: '0.9rem' }}>
                 Fast, secure loan solutions. Licensed and regulated.
               </p>
-              <div style={{ display: 'flex', gap: '10px' }}>
+              <div className="social-icons" style={{ display: 'flex', gap: '10px' }}>
                 <div style={{ width: '40px', height: '40px', backgroundColor: '#1877f2', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                   <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                 </div>
@@ -220,7 +285,7 @@ const Home = () => {
           </div>
           
           {/* Bottom Bar */}
-          <div style={{ borderTop: '1px solid #374151', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
+          <div className="bottom-bar" style={{ borderTop: '1px solid #374151', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
             <p style={{ margin: 0, color: '#9ca3af' }}>
               © 2025 TrustFund Capital. All rights reserved. | Licensed Lender NMLS #123456
             </p>
