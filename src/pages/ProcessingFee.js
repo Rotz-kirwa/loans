@@ -1,9 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Header from '../components/Header';
 import API from '../api';
+import {
+  formatKenyanPhoneInput,
+  isCompleteKenyanPhone,
+  KENYA_COUNTRY_CODE,
+  KENYAN_PHONE_LENGTH,
+} from '../utils/phone';
 
 const ProcessingFee = () => {
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState(KENYA_COUNTRY_CODE);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPolling, setIsPolling] = useState(false);
   const [application, setApplication] = useState(null);
@@ -34,7 +40,7 @@ const ProcessingFee = () => {
       setApplication(parsedApplication);
 
       if (parsedApplication.mpesaPhone || parsedApplication.phone) {
-        setPhoneNumber(parsedApplication.mpesaPhone || parsedApplication.phone);
+        setPhoneNumber(formatKenyanPhoneInput(parsedApplication.mpesaPhone || parsedApplication.phone));
       }
 
       if (parsedApplication.paymentStatus === 'paid') {
@@ -119,6 +125,12 @@ const ProcessingFee = () => {
     if (!application?.loanId) {
       setStatusTone('error');
       setStatusMessage('We could not find a submitted loan application. Please complete the application form first.');
+      return;
+    }
+
+    if (!isCompleteKenyanPhone(phoneNumber)) {
+      setStatusTone('error');
+      setStatusMessage('Enter a valid Safaricom number starting with 2547 before sending the M-PESA prompt.');
       return;
     }
 
@@ -226,8 +238,10 @@ const ProcessingFee = () => {
                 <input
                   type="tel"
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="254700123456"
+                  onChange={(e) => setPhoneNumber(formatKenyanPhoneInput(e.target.value))}
+                  inputMode="numeric"
+                  maxLength={KENYAN_PHONE_LENGTH}
+                  placeholder="2547XXXXXXXX"
                   required
                   style={{ 
                     width: '100%', 

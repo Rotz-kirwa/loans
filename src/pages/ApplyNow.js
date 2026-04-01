@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import API from '../api';
+import {
+  formatKenyanPhoneInput,
+  isCompleteKenyanPhone,
+  KENYA_COUNTRY_CODE,
+  KENYAN_PHONE_LENGTH,
+} from '../utils/phone';
 
 const ApplyNow = () => {
   const navigate = useNavigate();
@@ -9,7 +15,7 @@ const ApplyNow = () => {
     firstName: '',
     lastName: '',
     idNumber: '',
-    phone: '',
+    phone: KENYA_COUNTRY_CODE,
     loanAmount: '',
     income: '',
     employment: '',
@@ -33,9 +39,14 @@ const ApplyNow = () => {
   const totalAmount = calculateTotalAmount();
 
   const handleChange = (e) => {
+    const nextValue =
+      e.target.name === 'phone'
+        ? formatKenyanPhoneInput(e.target.value)
+        : e.target.value;
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: nextValue
     });
   };
 
@@ -44,12 +55,18 @@ const ApplyNow = () => {
     setIsSubmitting(true);
     setSubmitError('');
 
+    if (!isCompleteKenyanPhone(formData.phone)) {
+      setSubmitError('Enter a valid Safaricom number starting with 2547.');
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const response = await API.post('/loans', {
         firstName: formData.firstName,
         lastName: formData.lastName,
         idNumber: formData.idNumber,
-        phone: formData.phone,
+        phone: formatKenyanPhoneInput(formData.phone),
         loanAmount: Number(formData.loanAmount),
         income: Number(formData.income),
         employment: formData.employment,
@@ -149,6 +166,9 @@ const ApplyNow = () => {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
+                  inputMode="numeric"
+                  maxLength={KENYAN_PHONE_LENGTH}
+                  placeholder="2547XXXXXXXX"
                   required
                   style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '5px', fontSize: '1rem' }}
                 />
