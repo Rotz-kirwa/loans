@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
+import API from '../api';
 
 const ApplyNow = () => {
   const navigate = useNavigate();
@@ -14,12 +15,15 @@ const ApplyNow = () => {
     employment: '',
     loanTerm: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const monthlyInterestRate = 5;
 
   const calculateTotalAmount = () => {
     if (formData.loanAmount && formData.loanTerm) {
       const principal = parseFloat(formData.loanAmount);
       const months = parseInt(formData.loanTerm);
-      const monthlyInterest = 0.05; // 5% per month
+      const monthlyInterest = monthlyInterestRate / 100;
       const totalInterest = principal * monthlyInterest * months;
       return principal + totalInterest;
     }
@@ -35,16 +39,48 @@ const ApplyNow = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Store form data in localStorage for later use
-    localStorage.setItem('loanApplication', JSON.stringify(formData));
-    // Navigate to processing fee page
-    navigate('/processing-fee');
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const response = await API.post('/loans', {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        idNumber: formData.idNumber,
+        phone: formData.phone,
+        loanAmount: Number(formData.loanAmount),
+        income: Number(formData.income),
+        employment: formData.employment,
+        loanTerm: Number(formData.loanTerm),
+        totalAmount,
+        interestRate: monthlyInterestRate
+      });
+
+      localStorage.setItem(
+        'loanApplication',
+        JSON.stringify({
+          ...formData,
+          loanId: response.data.loan.id,
+          totalAmount,
+          paymentStatus: response.data.loan.paymentStatus,
+          amountPaid: 0,
+          mpesaPhone: '',
+          mpesaReceiptNumber: ''
+        })
+      );
+
+      navigate('/processing-fee');
+    } catch (error) {
+      setSubmitError(error.response?.data?.error || 'We could not submit your application. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', margin: 0, padding: 0 }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', margin: 0, padding: 0, paddingTop: '70px' }}>
       <Header />
       
       <section style={{ 
@@ -200,29 +236,44 @@ const ApplyNow = () => {
                 }}>
                   <h4 style={{ color: '#1e3a8a', marginBottom: '10px' }}>Loan Calculation</h4>
                   <p style={{ margin: '5px 0', color: '#666' }}>Loan Amount: Ksh {parseInt(formData.loanAmount).toLocaleString()}</p>
-                  <p style={{ margin: '5px 0', color: '#666' }}>Interest Rate: 5% per month</p>
+                  <p style={{ margin: '5px 0', color: '#666' }}>Interest Rate: {monthlyInterestRate}% per month</p>
                   <p style={{ margin: '5px 0', color: '#666' }}>Loan Term: {formData.loanTerm} month(s)</p>
                   <p style={{ margin: '10px 0 0 0', fontSize: '1.2rem', fontWeight: 'bold', color: '#1e3a8a' }}>
                     Total Amount to Pay: Ksh {totalAmount.toLocaleString()}
                   </p>
                 </div>
               )}
+
+              {submitError && (
+                <div style={{
+                  marginBottom: '20px',
+                  padding: '14px 16px',
+                  borderRadius: '8px',
+                  backgroundColor: '#fef2f2',
+                  border: '1px solid #fca5a5',
+                  color: '#b91c1c',
+                  fontSize: '0.95rem'
+                }}>
+                  {submitError}
+                </div>
+              )}
               
               <button
                 type="submit"
+                disabled={isSubmitting}
                 style={{ 
                   width: '100%',
-                  backgroundColor: '#1e3a8a', 
+                  backgroundColor: isSubmitting ? '#94a3b8' : '#1e3a8a', 
                   color: 'white', 
                   border: 'none', 
                   padding: '15px', 
                   fontSize: '1.2rem', 
                   fontWeight: 'bold', 
                   borderRadius: '5px', 
-                  cursor: 'pointer' 
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer' 
                 }}
               >
-                Submit Application
+                {isSubmitting ? 'Submitting Application...' : 'Submit Application'}
               </button>
             </form>
           </div>
