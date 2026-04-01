@@ -39,7 +39,7 @@ const ProcessingFee = () => {
 
       if (parsedApplication.paymentStatus === 'paid') {
         setStatusTone('success');
-        setStatusMessage('Payment confirmed. Your loan application is under review.');
+        setStatusMessage('Payment confirmed. Your loan application is approved and the funds will be in your account in less than a minute.');
       } else if (parsedApplication.paymentStatus === 'failed') {
         setStatusTone('error');
         setStatusMessage('The last M-PESA payment attempt did not complete. You can try again.');
@@ -76,8 +76,8 @@ const ProcessingFee = () => {
           setStatusTone('success');
           setStatusMessage(
             payment.mpesaReceiptNumber
-              ? `Payment confirmed. M-PESA receipt ${payment.mpesaReceiptNumber}. Your loan application is now under review.`
-              : 'Payment confirmed. Your loan application is now under review.'
+              ? `Payment confirmed. M-PESA receipt ${payment.mpesaReceiptNumber}. Your loan application is approved and the funds will be in your account in less than a minute.`
+              : 'Payment confirmed. Your loan application is approved and the funds will be in your account in less than a minute.'
           );
           return;
         }

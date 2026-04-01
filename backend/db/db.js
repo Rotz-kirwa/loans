@@ -36,6 +36,9 @@ const loanColumns = [
   'mpesa_requested_at DATETIME',
   'mpesa_transaction_date DATETIME',
   'mpesa_callback_payload TEXT',
+  'approval_sms_status TEXT',
+  'approval_sms_sent_at DATETIME',
+  'approval_sms_error TEXT',
   'created_at DATETIME DEFAULT CURRENT_TIMESTAMP',
   'due_date DATETIME'
 ];
@@ -61,7 +64,10 @@ const requiredColumns = {
   mpesa_result_desc: 'TEXT',
   mpesa_requested_at: 'DATETIME',
   mpesa_transaction_date: 'DATETIME',
-  mpesa_callback_payload: 'TEXT'
+  mpesa_callback_payload: 'TEXT',
+  approval_sms_status: 'TEXT',
+  approval_sms_sent_at: 'DATETIME',
+  approval_sms_error: 'TEXT'
 };
 
 db.serialize(() => {

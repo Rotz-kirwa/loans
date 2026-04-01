@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/db');
 const {
+  areApprovalSmsNotificationsConfigured,
+  sendLoanApprovalSms,
+} = require('../services/notifications');
+const {
   formatMpesaError,
   initiateStkPush,
   isMpesaConfigurationError,
@@ -87,6 +91,8 @@ const toPaymentSnapshot = (loan) => {
     paymentReceivedAt: loan.payment_received_at || null,
     paymentRequestedAt: loan.mpesa_requested_at || null,
     transactionDate: loan.mpesa_transaction_date || null,
+    approvalSmsStatus: loan.approval_sms_status || null,
+    approvalSmsSentAt: loan.approval_sms_sent_at || null,
   };
 };
 
@@ -99,6 +105,74 @@ const updateLoanPaymentRecord = async (loanId, updateFields) => {
     `UPDATE loans SET ${assignments} WHERE id = ?`,
     [...values, loanId]
   );
+};
+
+const claimApprovalSmsDispatch = async (loanId) => {
+  const result = await runQuery(
+    `UPDATE loans
+      SET approval_sms_status = ?
+      WHERE id = ?
+        AND payment_status = 'paid'
+        AND approval_sms_sent_at IS NULL
+        AND COALESCE(approval_sms_status, '') != ?`,
+    ['sending', loanId, 'sending']
+  );
+
+  return result.changes > 0;
+};
+
+const maybeSendApprovalSms = async (loan) => {
+  if (!loan || loan.payment_status !== 'paid' || loan.approval_sms_sent_at) {
+    return;
+  }
+
+  try {
+    const canSendNow = await claimApprovalSmsDispatch(loan.id);
+    if (!canSendNow) {
+      return;
+    }
+
+    if (!areApprovalSmsNotificationsConfigured()) {
+      await updateLoanPaymentRecord(loan.id, {
+        approval_sms_status: 'not_configured',
+        approval_sms_error: 'Africa\'s Talking SMS notifications are not configured.',
+      });
+      return;
+    }
+
+    await sendLoanApprovalSms(loan);
+    await updateLoanPaymentRecord(loan.id, {
+      approval_sms_status: 'sent',
+      approval_sms_sent_at: new Date().toISOString(),
+      approval_sms_error: null,
+    });
+  } catch (error) {
+    console.error('Failed to send approval SMS:', error.message);
+    try {
+      await updateLoanPaymentRecord(loan.id, {
+        approval_sms_status: 'failed',
+        approval_sms_error: error.message,
+      });
+    } catch (dbError) {
+      console.error('Failed to persist the approval SMS error:', dbError.message);
+    }
+  }
+};
+
+const markLoanAsPaid = async (loan, updateFields = {}) => {
+  await updateLoanPaymentRecord(loan.id, {
+    payment_status: 'paid',
+    status: 'approved',
+    paid_amount: Number(loan.payment_requested_amount || 0),
+    payment_received_at: loan.payment_received_at || new Date().toISOString(),
+    ...updateFields,
+  });
+
+  let updatedLoan = await getLoanById(loan.id);
+  await maybeSendApprovalSms(updatedLoan);
+  updatedLoan = await getLoanById(loan.id);
+
+  return updatedLoan;
 };
 
 const syncPendingLoanFromQuery = async (loan) => {
@@ -122,9 +196,7 @@ const syncPendingLoanFromQuery = async (loan) => {
   }
 
   if (resultCode === '0') {
-    await updateLoanPaymentRecord(loan.id, {
-      payment_status: 'paid',
-      status: 'under_review',
+    return markLoanAsPaid(loan, {
       paid_amount: Number(loan.payment_requested_amount || 0),
       payment_received_at: loan.payment_received_at || new Date().toISOString(),
       mpesa_result_code: resultCode,
@@ -141,7 +213,7 @@ const syncPendingLoanFromQuery = async (loan) => {
     await updateLoanPaymentRecord(loan.id, {
       mpesa_result_code: resultCode,
       mpesa_result_desc: resultDescription,
-    });
+      });
   }
 
   return getLoanById(loan.id);
@@ -161,10 +233,18 @@ router.post('/stkpush', async (req, res) => {
   }
 
   try {
-    const loan = await getLoanById(loanId);
+    let loan = await getLoanById(loanId);
 
     if (!loan) {
       return res.status(404).json({ success: false, message: 'Loan application not found.' });
+    }
+
+    if (loan.payment_status === 'pending' && loan.mpesa_checkout_request_id) {
+      try {
+        loan = await syncPendingLoanFromQuery(loan);
+      } catch (error) {
+        console.error('Failed to refresh an existing STK request before retry:', formatMpesaError(error));
+      }
     }
 
     if (loan.payment_status === 'paid') {
@@ -261,6 +341,11 @@ router.get('/loan/:loanId/status', async (req, res) => {
       }
     }
 
+    if (loan.payment_status === 'paid' && !loan.approval_sms_sent_at) {
+      await maybeSendApprovalSms(loan);
+      loan = await getLoanById(loan.id);
+    }
+
     return res.json({
       success: true,
       ...toPaymentSnapshot(loan),
@@ -321,9 +406,7 @@ router.post('/callback', async (req, res) => {
     }
 
     if (resultCode === '0') {
-      await updateLoanPaymentRecord(loan.id, {
-        payment_status: 'paid',
-        status: 'under_review',
+      await markLoanAsPaid(loan, {
         paid_amount: paidAmount || Number(loan.payment_requested_amount || 0),
         payment_received_at: new Date().toISOString(),
         mpesa_phone: mpesaPhone || loan.mpesa_phone || loan.phone,
