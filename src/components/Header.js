@@ -3,13 +3,39 @@ import { Link } from 'react-router-dom';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const adminUrl = process.env.REACT_APP_ADMIN_URL || 'http://localhost:3001';
 
   return (
     <>
       <style>{`
         @media (max-width: 768px) {
+          .site-header-inner {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) auto !important;
+            align-items: center !important;
+            gap: 12px !important;
+          }
+          .brand-link {
+            min-width: 0;
+            width: 100%;
+          }
+          .brand-title {
+            font-size: 1.2rem !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
           .desktop-nav { display: none !important; }
-          .mobile-menu-btn { display: block !important; }
+          .mobile-menu-btn {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            margin: 0 !important;
+            justify-self: end !important;
+            align-self: center !important;
+          }
           .mobile-nav {
             display: ${isMenuOpen ? 'block' : 'none'} !important;
             position: absolute;
@@ -34,9 +60,9 @@ const Header = () => {
         }
       `}</style>
       <header style={{ backgroundColor: '#1e3a8a', color: 'white', padding: '15px 0', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000 }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', position: 'relative', gap: '40px' }}>
-          <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>
-            <h1 style={{ fontSize: '1.8rem', margin: 0 }}>TrustFund Capital</h1>
+        <div className="site-header-inner" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', position: 'relative', gap: '40px' }}>
+          <Link to="/" className="brand-link" style={{ color: 'white', textDecoration: 'none' }}>
+            <h1 className="brand-title" style={{ fontSize: '1.8rem', margin: 0 }}>TrustFund Capital</h1>
           </Link>
           
           {/* Desktop Navigation */}
@@ -45,12 +71,30 @@ const Header = () => {
             <Link to="/eligibility" style={{ color: 'white', textDecoration: 'none', margin: '0 15px' }}>Eligibility</Link>
             <Link to="/apply" style={{ color: 'white', textDecoration: 'none', margin: '0 15px' }}>Apply Now</Link>
             <Link to="/faq" style={{ color: 'white', textDecoration: 'none', margin: '0 15px' }}>FAQ</Link>
+            <a
+              href={adminUrl}
+              style={{
+                color: '#1e3a8a',
+                textDecoration: 'none',
+                margin: '0 0 0 15px',
+                backgroundColor: '#fbbf24',
+                padding: '10px 16px',
+                borderRadius: '999px',
+                fontWeight: 'bold',
+                display: 'inline-block'
+              }}
+            >
+              Admin Portal
+            </a>
           </nav>
           
           {/* Mobile Hamburger Button */}
           <button 
             className="mobile-menu-btn"
+            type="button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={isMenuOpen}
             style={{ 
               display: 'none',
               background: 'none', 
@@ -70,6 +114,22 @@ const Header = () => {
             <Link to="/eligibility" style={{ color: 'white', textDecoration: 'none' }} onClick={() => setIsMenuOpen(false)}>Eligibility</Link>
             <Link to="/apply" style={{ color: 'white', textDecoration: 'none' }} onClick={() => setIsMenuOpen(false)}>Apply Now</Link>
             <Link to="/faq" style={{ color: 'white', textDecoration: 'none' }} onClick={() => setIsMenuOpen(false)}>FAQ</Link>
+            <a
+              href={adminUrl}
+              style={{
+                color: '#1e3a8a',
+                textDecoration: 'none',
+                marginTop: '12px',
+                backgroundColor: '#fbbf24',
+                padding: '12px 16px',
+                borderRadius: '12px',
+                fontWeight: 'bold',
+                display: 'inline-block',
+                textAlign: 'center'
+              }}
+            >
+              Admin Portal
+            </a>
           </nav>
         </div>
       </header>
