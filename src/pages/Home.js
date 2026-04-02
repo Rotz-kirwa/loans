@@ -6,6 +6,114 @@ const Home = () => {
   return (
     <div style={{ fontFamily: 'Arial, sans-serif', margin: 0, padding: 0, paddingTop: '70px' }}>
       <style>{`
+        .hero-apply-link,
+        .cta-apply-link {
+          display: inline-block;
+        }
+        .hero-apply-btn,
+        .cta-apply-btn {
+          position: relative;
+          overflow: hidden;
+          border: none;
+          color: #1e3a8a;
+          background: linear-gradient(135deg, #fde047 0%, #fbbf24 45%, #f59e0b 100%);
+          font-weight: bold;
+          border-radius: 18px;
+          cursor: pointer;
+          box-shadow: 0 18px 40px rgba(245, 158, 11, 0.34);
+          transform: translateY(0);
+          transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+          animation: ctaPulse 1.8s ease-in-out infinite;
+        }
+        .hero-apply-btn {
+          padding: 20px 34px;
+          font-size: 1.3rem;
+        }
+        .cta-apply-btn {
+          padding: 16px 28px;
+          font-size: 1.05rem;
+        }
+        .hero-apply-btn::before,
+        .cta-apply-btn::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(120deg, transparent 15%, rgba(255,255,255,0.42) 50%, transparent 85%);
+          transform: translateX(-135%);
+          animation: ctaShine 2.8s linear infinite;
+        }
+        .hero-apply-btn:hover,
+        .cta-apply-btn:hover {
+          transform: translateY(-3px) scale(1.02);
+          box-shadow: 0 22px 44px rgba(245, 158, 11, 0.42);
+          filter: saturate(1.08);
+        }
+        .cta-button-content {
+          position: relative;
+          z-index: 1;
+          display: inline-flex;
+          align-items: center;
+          gap: 14px;
+        }
+        .cta-button-label {
+          letter-spacing: 0.01em;
+        }
+        .cta-button-arrow {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 38px;
+          height: 38px;
+          border-radius: 999px;
+          background: rgba(30, 58, 138, 0.12);
+          font-size: 1.2rem;
+          font-weight: 900;
+          animation: ctaArrowNudge 1.2s ease-in-out infinite;
+        }
+        .cta-button-sparkle {
+          position: absolute;
+          top: 8px;
+          right: 14px;
+          z-index: 1;
+          color: rgba(255, 255, 255, 0.92);
+          font-size: 0.95rem;
+          text-shadow: 0 0 16px rgba(255,255,255,0.7);
+          animation: ctaTwinkle 1s ease-in-out infinite alternate;
+        }
+        @keyframes ctaPulse {
+          0%, 100% {
+            box-shadow: 0 18px 40px rgba(245, 158, 11, 0.34);
+          }
+          50% {
+            box-shadow: 0 22px 48px rgba(245, 158, 11, 0.5);
+          }
+        }
+        @keyframes ctaShine {
+          0% {
+            transform: translateX(-135%);
+          }
+          100% {
+            transform: translateX(135%);
+          }
+        }
+        @keyframes ctaArrowNudge {
+          0%, 100% {
+            transform: translateX(0);
+          }
+          50% {
+            transform: translateX(5px);
+          }
+        }
+        @keyframes ctaTwinkle {
+          0% {
+            opacity: 0.35;
+            transform: scale(0.8) rotate(-12deg);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1.15) rotate(8deg);
+          }
+        }
         .hero-section {
           background-image: url('https://i.pinimg.com/736x/85/24/93/852493ad820113f7e38b1bd4a45d5676.jpg');
         }
@@ -23,8 +131,17 @@ const Home = () => {
             padding: 20px 15px !important;
           }
           .hero-content button {
-            padding: 15px 25px !important;
+            width: min(100%, 340px);
+            padding: 18px 22px !important;
             font-size: 1.1rem !important;
+          }
+          .cta-button-content {
+            width: 100%;
+            justify-content: center;
+          }
+          .cta-button-arrow {
+            width: 34px;
+            height: 34px;
           }
           .features-section {
             padding: 50px 15px !important;
@@ -77,6 +194,16 @@ const Home = () => {
             font-size: 0.8rem !important;
           }
         }
+        @media (prefers-reduced-motion: reduce) {
+          .hero-apply-btn,
+          .cta-apply-btn,
+          .hero-apply-btn::before,
+          .cta-apply-btn::before,
+          .cta-button-arrow,
+          .cta-button-sparkle {
+            animation: none !important;
+          }
+        }
       `}</style>
       <Header />
       
@@ -95,19 +222,13 @@ const Home = () => {
         backgroundColor: '#f8fafc'
       }}>
         <div className="hero-content" style={{ maxWidth: '800px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <Link to="/apply">
-            <button style={{ 
-              backgroundColor: '#fbbf24', 
-              color: '#1e3a8a', 
-              border: 'none', 
-              padding: '20px 40px', 
-              fontSize: '1.3rem', 
-              fontWeight: 'bold', 
-              borderRadius: '8px', 
-              cursor: 'pointer',
-              boxShadow: '0 4px 8px rgba(0,0,0,0.3)'
-            }}>
-              Apply for Loan Now
+          <Link to="/apply" className="hero-apply-link">
+            <button className="hero-apply-btn">
+              <span className="cta-button-sparkle" aria-hidden="true">✦</span>
+              <span className="cta-button-content">
+                <span className="cta-button-label">Apply for Loan Now</span>
+                <span className="cta-button-arrow" aria-hidden="true">→</span>
+              </span>
             </button>
           </Link>
         </div>
@@ -203,18 +324,13 @@ const Home = () => {
           <p style={{ fontSize: '1.1rem', marginBottom: '30px' }}>
             Start your loan application today and get the funds you need
           </p>
-          <Link to="/apply">
-            <button style={{ 
-              backgroundColor: '#fbbf24', 
-              color: '#1e3a8a', 
-              border: 'none', 
-              padding: '15px 30px', 
-              fontSize: '1.1rem', 
-              fontWeight: 'bold', 
-              borderRadius: '5px', 
-              cursor: 'pointer' 
-            }}>
-              Apply Now
+          <Link to="/apply" className="cta-apply-link">
+            <button className="cta-apply-btn">
+              <span className="cta-button-sparkle" aria-hidden="true">✦</span>
+              <span className="cta-button-content">
+                <span className="cta-button-label">Apply Now</span>
+                <span className="cta-button-arrow" aria-hidden="true">→</span>
+              </span>
             </button>
           </Link>
         </div>
