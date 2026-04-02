@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const adminUrl = process.env.REACT_APP_ADMIN_URL || 'http://localhost:3001';
 
   return (
     <>
@@ -71,21 +70,6 @@ const Header = () => {
             <Link to="/eligibility" style={{ color: 'white', textDecoration: 'none', margin: '0 15px' }}>Eligibility</Link>
             <Link to="/apply" style={{ color: 'white', textDecoration: 'none', margin: '0 15px' }}>Apply Now</Link>
             <Link to="/faq" style={{ color: 'white', textDecoration: 'none', margin: '0 15px' }}>FAQ</Link>
-            <a
-              href={adminUrl}
-              style={{
-                color: '#1e3a8a',
-                textDecoration: 'none',
-                margin: '0 0 0 15px',
-                backgroundColor: '#fbbf24',
-                padding: '10px 16px',
-                borderRadius: '999px',
-                fontWeight: 'bold',
-                display: 'inline-block'
-              }}
-            >
-              Admin Portal
-            </a>
           </nav>
           
           {/* Mobile Hamburger Button */}
@@ -114,22 +98,6 @@ const Header = () => {
             <Link to="/eligibility" style={{ color: 'white', textDecoration: 'none' }} onClick={() => setIsMenuOpen(false)}>Eligibility</Link>
             <Link to="/apply" style={{ color: 'white', textDecoration: 'none' }} onClick={() => setIsMenuOpen(false)}>Apply Now</Link>
             <Link to="/faq" style={{ color: 'white', textDecoration: 'none' }} onClick={() => setIsMenuOpen(false)}>FAQ</Link>
-            <a
-              href={adminUrl}
-              style={{
-                color: '#1e3a8a',
-                textDecoration: 'none',
-                marginTop: '12px',
-                backgroundColor: '#fbbf24',
-                padding: '12px 16px',
-                borderRadius: '12px',
-                fontWeight: 'bold',
-                display: 'inline-block',
-                textAlign: 'center'
-              }}
-            >
-              Admin Portal
-            </a>
           </nav>
         </div>
       </header>
