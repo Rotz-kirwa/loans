@@ -16,7 +16,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:admin": "npm start --prefix admin",
     "build": "react-scripts build",
+    "build:admin": "npm run build --prefix admin",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

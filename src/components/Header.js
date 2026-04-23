@@ -41,7 +41,9 @@ const Header = () => {
             top: 100%;
             left: 0;
             right: 0;
-            background-color: #1e3a8a;
+            background-color: rgba(30, 58, 138, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             padding: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
           }
@@ -58,10 +60,23 @@ const Header = () => {
           .desktop-nav { margin-left: auto !important; }
         }
       `}</style>
-      <header style={{ backgroundColor: '#1e3a8a', color: 'white', padding: '15px 0', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000 }}>
-        <div className="site-header-inner" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', position: 'relative', gap: '40px' }}>
+      <header style={{ 
+        backgroundColor: 'rgba(30, 58, 138, 0.9)', 
+        backdropFilter: 'blur(16px)', 
+        WebkitBackdropFilter: 'blur(16px)',
+        color: 'white', 
+        padding: '10px 0', 
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        right: 0, 
+        zIndex: 1000,
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)'
+      }}>
+        <div className="site-header-inner" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
           <Link to="/" className="brand-link" style={{ color: 'white', textDecoration: 'none' }}>
-            <h1 className="brand-title" style={{ fontSize: '1.8rem', margin: 0 }}>TrustFund Capital</h1>
+            <h1 className="brand-title" style={{ fontSize: '1.8rem', margin: 0 }}>Loanvia</h1>
           </Link>
           
           {/* Desktop Navigation */}

@@ -5,6 +5,30 @@ const MPESA_BASE_URLS = {
   production: 'https://api.safaricom.co.ke',
 };
 
+const normalizePublicUrl = (value) => `${value || ''}`.trim().replace(/\/+$/, '');
+
+const resolveCallbackUrl = () => {
+  const explicitCallbackUrl = normalizePublicUrl(process.env.MPESA_CALLBACK_URL);
+  if (explicitCallbackUrl) {
+    return explicitCallbackUrl;
+  }
+
+  const publicBaseUrl = normalizePublicUrl(
+    process.env.PUBLIC_BACKEND_URL ||
+    process.env.RENDER_EXTERNAL_URL
+  );
+
+  if (!publicBaseUrl) {
+    return '';
+  }
+
+  if (publicBaseUrl.endsWith('/api')) {
+    return `${publicBaseUrl}/mpesa/callback`;
+  }
+
+  return `${publicBaseUrl}/api/mpesa/callback`;
+};
+
 const getMpesaConfig = () => {
   const environment = (process.env.MPESA_ENV || 'production').toLowerCase();
   const baseUrl = MPESA_BASE_URLS[environment] || MPESA_BASE_URLS.production;
@@ -16,8 +40,8 @@ const getMpesaConfig = () => {
     consumerSecret: (process.env.MPESA_CONSUMER_SECRET || '').trim(),
     shortcode: (process.env.MPESA_SHORTCODE || '').trim(),
     passkey: (process.env.MPESA_PASSKEY || '').trim(),
-    callbackUrl: (process.env.MPESA_CALLBACK_URL || '').trim(),
-    partnerName: (process.env.MPESA_PARTNER_NAME || 'TrustFund Capital').trim(),
+    callbackUrl: resolveCallbackUrl(),
+    partnerName: (process.env.MPESA_PARTNER_NAME || 'Loanvia').trim(),
   };
 };
 
@@ -44,6 +68,18 @@ const ensureMpesaConfig = () => {
     throw new Error('MPESA_CALLBACK_URL still points to a placeholder. Set it to your real public HTTPS callback URL.');
   }
 
+  let parsedCallbackUrl;
+
+  try {
+    parsedCallbackUrl = new URL(config.callbackUrl);
+  } catch (error) {
+    throw new Error('MPESA callback URL must be a valid public HTTPS URL.');
+  }
+
+  if (parsedCallbackUrl.protocol !== 'https:') {
+    throw new Error('MPESA callback URL must use HTTPS in production.');
+  }
+
   return config;
 };
 
@@ -52,7 +88,9 @@ const isMpesaConfigurationError = (error) => {
 
   return (
     message.startsWith('Missing M-PESA configuration:') ||
-    message.includes('MPESA_CALLBACK_URL still points to a placeholder')
+    message.includes('MPESA_CALLBACK_URL still points to a placeholder') ||
+    message.includes('MPESA callback URL must be a valid public HTTPS URL.') ||
+    message.includes('MPESA callback URL must use HTTPS in production.')
   );
 };
 
@@ -260,4 +298,5 @@ module.exports = {
   parseCallbackMetadata,
   parseTransactionDate,
   queryStkStatus,
+  resolveCallbackUrl,
 };

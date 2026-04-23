@@ -95,7 +95,7 @@ const FAQ = () => {
               📞 +254 700 123 456
             </p>
             <p style={{ color: '#666' }}>
-              📧 support@trustfundcapital.co.ke
+              📧 support@loanvia.co.ke
             </p>
           </div>
         </div>

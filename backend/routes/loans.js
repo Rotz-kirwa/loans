@@ -106,10 +106,18 @@ router.post('/', (req, res) => {
 
 // Get all loans (for admin)
 router.get('/', (req, res) => {
-  db.all('SELECT * FROM loans ORDER BY created_at DESC', [], (err, rows) => {
+  db.all(
+    `SELECT *,
+            COALESCE(payment_received_at, mpesa_requested_at, created_at) AS activity_at
+     FROM loans
+     ORDER BY datetime(COALESCE(payment_received_at, mpesa_requested_at, created_at)) DESC,
+              datetime(created_at) DESC`,
+    [],
+    (err, rows) => {
     if (err) return res.status(400).json({ error: err.message });
     res.json(rows);
-  });
+    }
+  );
 });
 
 // Update payment information for an application

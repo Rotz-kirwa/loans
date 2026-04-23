@@ -70,6 +70,15 @@ const requiredColumns = {
   approval_sms_error: 'TEXT'
 };
 
+const loanIndexes = [
+  { name: 'idx_loans_created_at', columnList: 'created_at' },
+  { name: 'idx_loans_payment_status', columnList: 'payment_status' },
+  { name: 'idx_loans_payment_received_at', columnList: 'payment_received_at' },
+  { name: 'idx_loans_mpesa_requested_at', columnList: 'mpesa_requested_at' },
+  { name: 'idx_loans_checkout_request_id', columnList: 'mpesa_checkout_request_id' },
+  { name: 'idx_loans_merchant_request_id', columnList: 'mpesa_merchant_request_id' }
+];
+
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS loans (${loanColumns.join(', ')})`);
 
@@ -92,6 +101,14 @@ db.serialize(() => {
           }
         );
       }
+    });
+
+    loanIndexes.forEach(({ name, columnList }) => {
+      db.run(`CREATE INDEX IF NOT EXISTS ${name} ON loans (${columnList})`, (indexErr) => {
+        if (indexErr) {
+          console.error(`Failed to create ${name}:`, indexErr.message);
+        }
+      });
     });
   });
 });

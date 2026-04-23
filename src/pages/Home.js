@@ -26,8 +26,8 @@ const Home = () => {
           animation: ctaPulse 1.8s ease-in-out infinite;
         }
         .hero-apply-btn {
-          padding: 20px 34px;
-          font-size: 1.3rem;
+          padding: 14px 28px;
+          font-size: 1.05rem;
         }
         .cta-apply-btn {
           padding: 16px 28px;
@@ -53,7 +53,7 @@ const Home = () => {
           z-index: 1;
           display: inline-flex;
           align-items: center;
-          gap: 14px;
+          gap: 10px;
         }
         .cta-button-label {
           letter-spacing: 0.01em;
@@ -62,8 +62,8 @@ const Home = () => {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          width: 38px;
-          height: 38px;
+          width: 32px;
+          height: 32px;
           border-radius: 999px;
           background: rgba(30, 58, 138, 0.12);
           font-size: 1.2rem;
@@ -115,25 +115,54 @@ const Home = () => {
           }
         }
         .hero-section {
-          background-image: url('https://i.pinimg.com/736x/85/24/93/852493ad820113f7e38b1bd4a45d5676.jpg');
+          background-image: url('/hero-bg.png');
+          background-position: center top !important;
+          background-size: cover;
+          height: auto !important;
+          min-height: 80vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
         }
+        .hero-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to bottom, rgba(255,255,255,0) 80%, rgba(248, 250, 252, 1) 100%);
+          pointer-events: none;
+        }
+        .hero-title, .hero-subtitle { display: none; }
         @media (max-width: 1200px) {
           .hero-section {
-            background-image: url('https://i.pinimg.com/736x/85/24/93/852493ad820113f7e38b1bd4a45d5676.jpg') !important;
+            min-height: 420px !important;
+            background-position: 10% top !important;
           }
-        }
-        @media (max-width: 768px) {
-          .hero-section {
-            background-image: url('https://i.pinimg.com/736x/85/24/93/852493ad820113f7e38b1bd4a45d5676.jpg') !important;
-            height: 60vh !important;
-            background-size: cover !important;
-            background-position: center center !important;
-            padding: 20px 15px !important;
+          .hero-overlay {
+            background: linear-gradient(to bottom, rgba(255,255,255,0) 50%, rgba(248, 250, 252, 1) 100%) !important;
           }
-          .hero-content button {
-            width: min(100%, 340px);
-            padding: 18px 22px !important;
+          .hero-cta-container {
+            margin: 0 !important;
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 0 !important;
+          }
+          .hero-glass-card {
+            padding: 30px 20px;
+            width: 100%;
+            margin: 0 !important;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 24px;
+          }
+          .hero-title {
+            font-size: 2.2rem !important;
+          }
+          .hero-subtitle {
             font-size: 1.1rem !important;
+            margin-bottom: 30px !important;
+          }
+          .hero-apply-btn {
+            width: 100% !important;
           }
           .cta-button-content {
             width: 100%;
@@ -204,41 +233,37 @@ const Home = () => {
             animation: none !important;
           }
         }
+        .feature-card:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
+          border-color: #fbbf24 !important;
+        }
       `}</style>
       <Header />
       
-      {/* Hero Section */}
-      <section className="hero-section" style={{ 
-        backgroundSize: 'cover', 
-        backgroundPosition: 'center', 
-        backgroundRepeat: 'no-repeat',
-        height: '80vh',
-        padding: '40px 20px', 
-        textAlign: 'center',
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'flex-end',
-        overflow: 'hidden',
-        backgroundColor: '#f8fafc'
-      }}>
-        <div className="hero-content" style={{ maxWidth: '800px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <Link to="/apply" className="hero-apply-link">
-            <button className="hero-apply-btn">
-              <span className="cta-button-sparkle" aria-hidden="true">✦</span>
-              <span className="cta-button-content">
-                <span className="cta-button-label">Apply for Loan Now</span>
-                <span className="cta-button-arrow" aria-hidden="true">→</span>
-              </span>
-            </button>
-          </Link>
-        </div>
+      <section className="hero-section">
+        <div className="hero-overlay" />
+        <Link to="/apply" style={{ position: 'absolute', inset: 0, zIndex: 2 }} aria-label="Apply for a Loan Now" />
       </section>
+
+      {/* Modern CTA Bar */}
+      <div style={{ backgroundColor: '#1e3a8a', padding: '20px', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.1)', position: 'relative', zIndex: 10 }}>
+        <Link to="/apply" className="hero-apply-link">
+          <button className="hero-apply-btn" style={{ padding: '16px 40px', fontSize: '1.1rem' }}>
+            <span className="cta-button-sparkle" aria-hidden="true">✦</span>
+            <span className="cta-button-content">
+              <span className="cta-button-label">Get Started & Apply for Loan Now</span>
+              <span className="cta-button-arrow" aria-hidden="true">→</span>
+            </span>
+          </button>
+        </Link>
+      </div>
 
       {/* Features Section */}
       <section className="features-section" style={{ padding: '80px 20px', backgroundColor: '#f8fafc' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <h3 style={{ textAlign: 'center', fontSize: '2.5rem', color: '#1e3a8a', marginBottom: '60px', fontWeight: 'bold' }}>
-            Why Choose TrustFund Capital?
+            Why Choose Loanvia?
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px' }}>
             <div className="feature-card" style={{ 
@@ -343,7 +368,7 @@ const Home = () => {
             
             {/* Company Info */}
             <div>
-              <h3 style={{ fontSize: '1.3rem', marginBottom: '15px', color: '#fbbf24' }}>TrustFund Capital</h3>
+              <h3 style={{ fontSize: '1.3rem', marginBottom: '15px', color: '#fbbf24' }}>Loanvia</h3>
               <p style={{ lineHeight: '1.5', marginBottom: '15px', color: '#cbd5e1', fontSize: '0.9rem' }}>
                 Fast, secure loan solutions. Licensed and regulated.
               </p>
@@ -392,7 +417,7 @@ const Home = () => {
               <h4 style={{ fontSize: '1.1rem', marginBottom: '15px', color: '#fbbf24' }}>Contact Us</h4>
               <div style={{ lineHeight: '1.6', color: '#cbd5e1', fontSize: '0.9rem' }}>
                 <p style={{ marginBottom: '10px' }}>📞 +254 700 123 456</p>
-                <p style={{ marginBottom: '10px' }}>📧 support@trustfundcapital.co.ke</p>
+                <p style={{ marginBottom: '10px' }}>📧 support@loanvia.co.ke</p>
                 <p style={{ marginBottom: '10px' }}>🏢 Westlands Square, 2nd Floor</p>
                 <p style={{ marginBottom: '10px' }}>Nairobi, Kenya 00100</p>
                 <p style={{ marginBottom: '10px' }}>⏰ Mon-Fri: 8AM-6PM EAT</p>
@@ -403,7 +428,7 @@ const Home = () => {
           {/* Bottom Bar */}
           <div className="bottom-bar" style={{ borderTop: '1px solid #374151', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
             <p style={{ margin: 0, color: '#9ca3af' }}>
-              © 2025 TrustFund Capital. All rights reserved. | Licensed Lender NMLS #123456
+              © 2025 Loanvia. All rights reserved. | Licensed Lender NMLS #123456
             </p>
             <div style={{ display: 'flex', gap: '20px', color: '#9ca3af', fontSize: '0.9rem' }}>
               <span style={{ cursor: 'pointer' }}>Privacy</span>
