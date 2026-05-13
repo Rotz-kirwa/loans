@@ -102,7 +102,7 @@ const ApplyNow = () => {
       
       <section style={{ 
         padding: '60px 20px', 
-        backgroundImage: 'url(https://i.pinimg.com/736x/16/db/e1/16dbe19cb2701486b69d7bab3fbedbe8.jpg)',
+        backgroundImage: 'url(/apply-bg.webp)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',

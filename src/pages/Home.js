@@ -115,7 +115,7 @@ const Home = () => {
           }
         }
         .hero-section {
-          background-image: url('/hero-bg.png');
+          background-image: url('/hero-bg.webp');
           background-position: center top !important;
           background-size: cover;
           height: auto !important;
