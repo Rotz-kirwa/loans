@@ -1,12 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const sqlite3 = require('sqlite3').verbose();
 
-const defaultDbPath = path.join(__dirname, '..', 'fintrust.db');
-const dbPath = process.env.DATABASE_PATH || defaultDbPath;
-
-fs.mkdirSync(path.dirname(dbPath), { recursive: true });
-const db = new sqlite3.Database(dbPath);
+const isPostgres = /^postgres(?:ql)?:\/\//i.test(process.env.DATABASE_URL || '');
 
 const loanColumns = [
   'id INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -79,38 +74,146 @@ const loanIndexes = [
   { name: 'idx_loans_merchant_request_id', columnList: 'mpesa_merchant_request_id' }
 ];
 
-db.serialize(() => {
-  db.run(`CREATE TABLE IF NOT EXISTS loans (${loanColumns.join(', ')})`);
+const runSqliteMigrations = (db) => {
+  db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS loans (${loanColumns.join(', ')})`);
 
-  db.all('PRAGMA table_info(loans)', (err, columns) => {
-    if (err) {
-      console.error('Failed to inspect loan table:', err.message);
-      return;
-    }
+    db.all('PRAGMA table_info(loans)', (err, columns) => {
+      if (err) {
+        console.error('Failed to inspect loan table:', err.message);
+        return;
+      }
 
-    const existingColumns = new Set(columns.map((column) => column.name));
+      const existingColumns = new Set(columns.map((column) => column.name));
 
-    Object.entries(requiredColumns).forEach(([columnName, definition]) => {
-      if (!existingColumns.has(columnName)) {
-        db.run(
-          `ALTER TABLE loans ADD COLUMN ${columnName} ${definition}`,
-          (alterErr) => {
+      Object.entries(requiredColumns).forEach(([columnName, definition]) => {
+        if (!existingColumns.has(columnName)) {
+          db.run(`ALTER TABLE loans ADD COLUMN ${columnName} ${definition}`, (alterErr) => {
             if (alterErr) {
               console.error(`Failed to add ${columnName} column:`, alterErr.message);
             }
-          }
-        );
-      }
-    });
-
-    loanIndexes.forEach(({ name, columnList }) => {
-      db.run(`CREATE INDEX IF NOT EXISTS ${name} ON loans (${columnList})`, (indexErr) => {
-        if (indexErr) {
-          console.error(`Failed to create ${name}:`, indexErr.message);
+          });
         }
+      });
+
+      loanIndexes.forEach(({ name, columnList }) => {
+        db.run(`CREATE INDEX IF NOT EXISTS ${name} ON loans (${columnList})`, (indexErr) => {
+          if (indexErr) {
+            console.error(`Failed to create ${name}:`, indexErr.message);
+          }
+        });
       });
     });
   });
-});
+};
 
-module.exports = db;
+const toPostgresDefinition = (definition, columnName) => {
+  if (columnName === 'id') {
+    return 'id SERIAL PRIMARY KEY';
+  }
+
+  return definition
+    .replace(/\bREAL\b/g, 'DOUBLE PRECISION')
+    .replace(/\bDATETIME\b/g, 'TIMESTAMPTZ')
+    .replace(/DEFAULT CURRENT_TIMESTAMP/g, 'DEFAULT CURRENT_TIMESTAMP');
+};
+
+const toPostgresSql = (sql) => {
+  let index = 0;
+  return sql.replace(/\?/g, () => `$${++index}`);
+};
+
+const createPostgresDb = () => {
+  const { Pool } = require('pg');
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.DATABASE_URL.includes('render.com')
+      ? { rejectUnauthorized: false }
+      : undefined,
+  });
+
+  const postgresColumns = loanColumns.map((definition) => {
+    const columnName = definition.split(/\s+/)[0];
+    return toPostgresDefinition(definition, columnName);
+  });
+
+  const ready = (async () => {
+    await pool.query(`CREATE TABLE IF NOT EXISTS loans (${postgresColumns.join(', ')})`);
+
+    const { rows } = await pool.query(
+      `SELECT column_name
+       FROM information_schema.columns
+       WHERE table_schema = 'public' AND table_name = 'loans'`
+    );
+    const existingColumns = new Set(rows.map((row) => row.column_name));
+
+    for (const [columnName, definition] of Object.entries(requiredColumns)) {
+      if (!existingColumns.has(columnName)) {
+        await pool.query(
+          `ALTER TABLE loans ADD COLUMN ${columnName} ${toPostgresDefinition(definition, columnName)}`
+        );
+      }
+    }
+
+    for (const { name, columnList } of loanIndexes) {
+      await pool.query(`CREATE INDEX IF NOT EXISTS ${name} ON loans (${columnList})`);
+    }
+  })().catch((error) => {
+    console.error('Failed to initialize Postgres database:', error.message);
+    throw error;
+  });
+
+  const query = async (sql, params = []) => {
+    await ready;
+
+    let statement = toPostgresSql(sql);
+    if (/^\s*INSERT\s+INTO\s+loans\b/i.test(statement) && !/\bRETURNING\b/i.test(statement)) {
+      statement = `${statement} RETURNING id`;
+    }
+
+    return pool.query(statement, params);
+  };
+
+  return {
+    run(sql, params = [], callback = () => {}) {
+      query(sql, params)
+        .then((result) => {
+          callback.call(
+            {
+              lastID: result.rows[0]?.id,
+              changes: result.rowCount,
+            },
+            null
+          );
+        })
+        .catch((error) => callback(error));
+    },
+    all(sql, params = [], callback = () => {}) {
+      query(sql, params)
+        .then((result) => callback(null, result.rows))
+        .catch((error) => callback(error));
+    },
+    get(sql, params = [], callback = () => {}) {
+      query(sql, params)
+        .then((result) => callback(null, result.rows[0]))
+        .catch((error) => callback(error));
+    },
+    close(callback = () => {}) {
+      pool.end(callback);
+    },
+  };
+};
+
+const createSqliteDb = () => {
+  const sqlite3 = require('sqlite3').verbose();
+  const defaultDbPath = path.join(__dirname, '..', 'fintrust.db');
+  const dbPath = process.env.DATABASE_PATH || defaultDbPath;
+
+  fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+  const db = new sqlite3.Database(dbPath);
+  runSqliteMigrations(db);
+
+  return db;
+};
+
+module.exports = isPostgres ? createPostgresDb() : createSqliteDb();
