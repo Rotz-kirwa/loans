@@ -413,9 +413,7 @@ const Home = () => {
                 <li style={{ color: '#cbd5e1', cursor: 'pointer' }}>
                   <Link to="/faq" style={{ color: 'inherit', textDecoration: 'none' }}>FAQ</Link>
                 </li>
-                <li style={{ color: '#cbd5e1', cursor: 'pointer' }}>Admin Portal
-                  <a href={process.env.REACT_APP_ADMIN_URL || 'http://localhost:3001'} target="_blank" rel="noopener noreferrer" style={{ color: '#fbbf24', textDecoration: 'none', marginLeft: '6px', fontWeight: 'bold' }}>→</a>
-                </li>
+
                 <li style={{ color: '#cbd5e1', cursor: 'pointer' }}>Privacy Policy</li>
                 <li style={{ color: '#cbd5e1', cursor: 'pointer' }}>Terms of Service</li>
               </ul>
