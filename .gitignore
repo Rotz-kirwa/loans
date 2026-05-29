@@ -27,3 +27,4 @@ backend/.env.local
 
 # admin site repository
 /admin
+backend/fintrust.db
