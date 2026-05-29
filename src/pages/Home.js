@@ -404,9 +404,18 @@ const Home = () => {
             <div>
               <h4 style={{ fontSize: '1.1rem', marginBottom: '15px', color: '#fbbf24' }}>Quick Links</h4>
               <ul style={{ listStyle: 'none', padding: 0, lineHeight: '1.6', fontSize: '0.9rem' }}>
-                <li style={{ color: '#cbd5e1', cursor: 'pointer' }}>Apply Now</li>
-                <li style={{ color: '#cbd5e1', cursor: 'pointer' }}>Check Eligibility</li>
-                <li style={{ color: '#cbd5e1', cursor: 'pointer' }}>FAQ</li>
+                <li style={{ color: '#cbd5e1', cursor: 'pointer' }}>
+                  <Link to="/apply" style={{ color: 'inherit', textDecoration: 'none' }}>Apply Now</Link>
+                </li>
+                <li style={{ color: '#cbd5e1', cursor: 'pointer' }}>
+                  <Link to="/eligibility" style={{ color: 'inherit', textDecoration: 'none' }}>Check Eligibility</Link>
+                </li>
+                <li style={{ color: '#cbd5e1', cursor: 'pointer' }}>
+                  <Link to="/faq" style={{ color: 'inherit', textDecoration: 'none' }}>FAQ</Link>
+                </li>
+                <li style={{ color: '#cbd5e1', cursor: 'pointer' }}>Admin Portal
+                  <a href={process.env.REACT_APP_ADMIN_URL || 'http://localhost:3001'} target="_blank" rel="noopener noreferrer" style={{ color: '#fbbf24', textDecoration: 'none', marginLeft: '6px', fontWeight: 'bold' }}>→</a>
+                </li>
                 <li style={{ color: '#cbd5e1', cursor: 'pointer' }}>Privacy Policy</li>
                 <li style={{ color: '#cbd5e1', cursor: 'pointer' }}>Terms of Service</li>
               </ul>

@@ -24,3 +24,6 @@ yarn-error.log*
 
 # local secrets
 backend/.env.local
+
+# admin site repository
+/admin

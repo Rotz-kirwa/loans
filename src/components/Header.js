@@ -85,6 +85,7 @@ const Header = () => {
             <Link to="/eligibility" style={{ color: 'white', textDecoration: 'none', margin: '0 15px' }}>Eligibility</Link>
             <Link to="/apply" style={{ color: 'white', textDecoration: 'none', margin: '0 15px' }}>Apply Now</Link>
             <Link to="/faq" style={{ color: 'white', textDecoration: 'none', margin: '0 15px' }}>FAQ</Link>
+            <a href={process.env.REACT_APP_ADMIN_URL || 'http://localhost:3001'} target="_blank" rel="noopener noreferrer" style={{ color: '#fbbf24', textDecoration: 'none', margin: '0 15px', fontWeight: 'bold' }}>Admin Portal</a>
           </nav>
           
           {/* Mobile Hamburger Button */}
@@ -113,6 +114,7 @@ const Header = () => {
             <Link to="/eligibility" style={{ color: 'white', textDecoration: 'none' }} onClick={() => setIsMenuOpen(false)}>Eligibility</Link>
             <Link to="/apply" style={{ color: 'white', textDecoration: 'none' }} onClick={() => setIsMenuOpen(false)}>Apply Now</Link>
             <Link to="/faq" style={{ color: 'white', textDecoration: 'none' }} onClick={() => setIsMenuOpen(false)}>FAQ</Link>
+            <a href={process.env.REACT_APP_ADMIN_URL || 'http://localhost:3001'} target="_blank" rel="noopener noreferrer" style={{ color: '#fbbf24', textDecoration: 'none', display: 'block', padding: '10px 0', fontWeight: 'bold' }} onClick={() => setIsMenuOpen(false)}>Admin Portal</a>
           </nav>
         </div>
       </header>

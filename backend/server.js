@@ -26,8 +26,9 @@ const allowedOrigins = new Set([...defaultAllowedOrigins, ...configuredOrigins])
 
 const corsOptions = {
   origin(origin, callback) {
+    // Allow requests with no origin (server-to-server, CRA proxy, curl, etc.)
     if (!origin) {
-      return callback(null, false);
+      return callback(null, true);
     }
 
     if (allowedOrigins.has(origin)) {
@@ -48,8 +49,10 @@ app.use(express.json());
 // Routes
 const loanRoutes = require('./routes/loans');
 const mpesaRoutes = require('./routes/mpesa');
+const { router: adminRoutes } = require('./routes/admin');
 app.use('/api/loans', loanRoutes);
 app.use('/api/mpesa', mpesaRoutes);
+app.use('/api/admin', adminRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));

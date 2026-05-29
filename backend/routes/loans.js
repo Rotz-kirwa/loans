@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db/db');
+const { requireAuth } = require('./admin');
 
 const allowedPaymentStatuses = new Set(['not_initiated', 'pending', 'failed']);
 
@@ -105,7 +106,7 @@ router.post('/', (req, res) => {
 });
 
 // Get all loans (for admin)
-router.get('/', (req, res) => {
+router.get('/', requireAuth, (req, res) => {
   db.all(
     `SELECT *,
             COALESCE(payment_received_at, mpesa_requested_at, created_at) AS activity_at
@@ -121,7 +122,7 @@ router.get('/', (req, res) => {
 });
 
 // Update payment information for an application
-router.patch('/:id/payment', (req, res) => {
+router.patch('/:id/payment', requireAuth, (req, res) => {
   const { id } = req.params;
   const { mpesaPhone, paymentStatus, amountPaid } = req.body;
 
